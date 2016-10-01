@@ -3,8 +3,6 @@
 import os
 import sys
 
-import colout2
-
 try:
     from setuptools import setup
 except ImportError:
@@ -20,18 +18,17 @@ requires = ['argparse', 'pygments', 'babel']
 
 setup(
     name='colout2',
-    version='1.0.2',
+    version='1.0.3',
     description='Color Up Arbitrary Command Output.',
-    long_description=open('README.md').read(),
+    long_description="See https://github.com/thedrow/colout2",
     author='Omer Katz',
     author_email='omer.drow@gmail.com',
     url='http://nojhan.github.com/colout/',
     packages=packages,
-    package_data={'': ['README.md', 'LICENSE']},
     package_dir={'colout2': 'colout2'},
     include_package_data=True,
     install_requires=requires,
-    license=open('LICENSE').read(),
+    license='GPLv3',
     entry_points={
         'console_scripts': [
             'colout2 = colout2.__main__:main'
