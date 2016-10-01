@@ -1,15 +1,15 @@
-colout(1) -- Color Up Arbitrary Command Output
+colout2(1) -- Color Up Arbitrary Command Output
 ==============================================
 
 ## SYNOPSIS
 
-`colout` [-h] [-r RESOURCE]
+`colout2` [-h] [-r RESOURCE]
 
-`colout` [-g] [-c] [-l min,max] [-a] [-t] [-T DIR] [-P DIR] [-d COLORMAP] [-s] [--debug] PATTERN [COLOR(S) [STYLE(S)]]
+`colout2` [-g] [-c] [-l min,max] [-a] [-t] [-T DIR] [-P DIR] [-d COLORMAP] [-s] [--debug] PATTERN [COLOR(S) [STYLE(S)]]
 
 ## DESCRIPTION
 
-`colout` read lines of text stream on the standard input and output characters
+`colout2` read lines of text stream on the standard input and output characters
 matching a given regular expression *PATTERN* in given *COLOR* and *STYLE*.
 
 If groups are specified in the regular expression pattern, only them are taken
@@ -48,7 +48,7 @@ default).
 text and apply the default colormap according to it. This ensure that matching
 texts appearing several times will always get the same color.
 
-Before interpreting the matched string as a number, colout will remove any
+Before interpreting the matched string as a number, colout2 will remove any
 character not supposed to be used to write down numbers. This permits to apply
 this special color on a large group, while interpreting only its numerical part.
 
@@ -63,47 +63,47 @@ be converted to their nearest ANSI 256 color mode equivalents.
 
 When not specified, a *COLOR* defaults to _red_ and a *STYLE* defaults to _bold_.
 
-`colout` comes with some predefined themes to rapidly color well-known outputs
+`colout2` comes with some predefined themes to rapidly color well-known outputs
 (see the `-t` switch below).
 
-If the python3-pygments library is available, `colout` can be used as an interface
+If the python3-pygments library is available, `colout2` can be used as an interface
 to it (see also the `-s` switch below).
 
 To have a list of all colors, styles, special colormaps, themes, palettes and lexers,
 use the `-r` switch (see below).
 
-`colout` is released under the GNU Public License v3.
+`colout2` is released under the GNU Public License v3.
 
 
 ## INSTALLATION
 
     sudo python3 setup.py install
 
-and then soft link `/usr/local/bin/colout` to your colout.py under your installation
+and then soft link `/usr/local/bin/colout2` to your colout2.py under your installation
 directory, which is usually something like
 
-    /usr/local/lib/python3/dist-packages/colout-0.1-py3.egg/colout/colout.py
+    /usr/local/lib/python3/dist-packages/colout2-0.1-py3.egg/colout2/colout2.py
 
 
 ## OTHER INSTALLATION METHOD
 
 Pypi (the Python Package Index)
 
-    sudo pip install colout
+    sudo pip install colout2
 
 or
 
-    sudo easy_install colout
+    sudo easy_install colout2
 
 Ubuntu 13.04's ppa
 
-    sudo add-apt-repository ppa:ciici123/colout
+    sudo add-apt-repository ppa:ciici123/colout2
     sudo apt-get update
-    sudo apt-get/aptitude install colout
+    sudo apt-get/aptitude install colout2
 
 Gentoo
 
-    sudo emerge colout
+    sudo emerge colout2
 
 ## OPTIONS
 
@@ -129,7 +129,7 @@ Gentoo
   Interpret PATTERN as a predefined theme (perm, cmake, g++, etc.).
 
 * `-T DIR`, `--themes-dir DIR`:
-  Search for additional themes (colout\_\*.py files) in this directory.
+  Search for additional themes (colout2\_\*.py files) in this directory.
 
 * `-P DIR`, `--palettes-dir DIR`:
   Search for additional palettes (\*.gpl files) in this directory.
@@ -161,8 +161,8 @@ Gentoo
 A regular expression (or _regex_) is a pattern that describes a set of strings
 that matches it.
 
-`colout` understands regex as specified in the _re_ python module. Given that
-`colout` is generally called by the command line, you may have to escape
+`colout2` understands regex as specified in the _re_ python module. Given that
+`colout2` is generally called by the command line, you may have to escape
 special characters that would be recognize by your shell.
 
 
@@ -177,7 +177,7 @@ Recommended packages:
 
 ## LIMITATIONS
 
-Don't use nested groups or colout will duplicate the corresponding input text
+Don't use nested groups or colout2 will duplicate the corresponding input text
 with each matching colors.
 
 Using a default colormap that is incompatible with the special colormap's mode
@@ -188,69 +188,69 @@ will end badly.
 
 ### Simple
 
-* Color in bold red every occurrence of the word _color_ in colout sources:
-  `cat colout.py | colout color red bold`
+* Color in bold red every occurrence of the word _color_ in colout2 sources:
+  `cat colout2.py | colout2 color red bold`
 
 * Color in bold violet home directories in _/etc/passwd_:
-  `colout '/home/[a-z]+' 135 < /etc/passwd`
+  `colout2 '/home/[a-z]+' 135 < /etc/passwd`
 
 * Color in yellow user/groups id, in bold green name and in bold red home directories in _/etc/passwd_:
-  `colout ':x:([0-9]+:[0-9]+):([^:]+).*(/home/[a-z]+)' yellow,green,red normal,bold < /etc/passwd`
+  `colout2 ':x:([0-9]+:[0-9]+):([^:]+).*(/home/[a-z]+)' yellow,green,red normal,bold < /etc/passwd`
 
 * Color in yellow file permissions with read rights for everyone:
-  `ls -l | colout '.(r.-){3}' yellow normal`
+  `ls -l | colout2 '.(r.-){3}' yellow normal`
 
 * Color in green read permission, in bold red write and execution ones:
-  `ls -l | colout '(r)(w*)(x*)' green,red normal,bold`
+  `ls -l | colout2 '(r)(w*)(x*)' green,red normal,bold`
 
-* Color in green comments in colout sources:
-  `colout '.*(#.*)$' green normal < colout.py`
+* Color in green comments in colout2 sources:
+  `colout2 '.*(#.*)$' green normal < colout2.py`
 
 * Color in bold green every numbers and in bold red the words _error_ in make output:
-  `make 2>&1 | colout '[0-9]+' green normal | colout error`
+  `make 2>&1 | colout2 '[0-9]+' green normal | colout2 error`
 
 
 ### Somewhat useful
 
 * Use a different color for each line of the auth log
-  `grep user /var/log/auth.log | colout "^.*$" rainbow`
+  `grep user /var/log/auth.log | colout2 "^.*$" rainbow`
 
 * Color each line of a file with a different color among a 256 color gradient from cyan to green:
-  `head /var/log/auth.log | colout -c "^.*$" 39,38,37,36,35,34`
+  `head /var/log/auth.log | colout2 -c "^.*$" 39,38,37,36,35,34`
 
 * Color permissions with a predefined template:
-  `ls -l | colout -t perm`
+  `ls -l | colout2 -t perm`
 
-* Color in light green comments in non-empty colout sources, with the sharp in bold green:
-  `grep -v '^\s*$' colout.py | colout '.*(#)(.*)$' green,119 bold,normal`
+* Color in light green comments in non-empty colout2 sources, with the sharp in bold green:
+  `grep -v '^\s*$' colout2.py | colout2 '.*(#)(.*)$' green,119 bold,normal`
 
 * Color a make output, line numbers in yellow, errors in bold red, warning in magenta, pragma in green and C++ file base names in cyan:
-  `make 2>&1 | colout ':([0-9]+):[0-9]*' yellow normal | colout error | colout warning magenta | colout pragma green normal | colout '/(\w+)*\.(h|cpp)' cyan normal`
+  `make 2>&1 | colout2 ':([0-9]+):[0-9]*' yellow normal | colout2 error | colout2 warning magenta | colout2 pragma green normal | colout2 '/(\w+)*\.(h|cpp)' cyan normal`
   Or using themes:
-  `make 2>&1 | colout -t cmake | colout -t g++`
+  `make 2>&1 | colout2 -t cmake | colout2 -t g++`
 
 * Color each word in the head of auth.log with a rainbow color map, starting a new colormap at each new line (the
   beginning of the command is just bash magic to repeat the string "(\\w+)\\W+":
-  `L=$(seq 10) ; P=${L//??/(\\w+)\\W+} ; head /var/log/auth.log | colout -g "^${P}(.*)$" rainbow`
+  `L=$(seq 10) ; P=${L//??/(\\w+)\\W+} ; head /var/log/auth.log | colout2 -g "^${P}(.*)$" rainbow`
 
 * Color source code in 8 colors mode, without seeing comments:
-  `cat colout.py | grep -v "#" | colout -s python`
+  `cat colout2.py | grep -v "#" | colout2 -s python`
 
 * Color source code in 256 color mode:
-  `cat colout.py | colout -s Python monokai`
+  `cat colout2.py | colout2 -s Python monokai`
 
 * Color a JSON stream:
-  `echo '{"foo": "lorem", "bar":"ipsum"}' | python -mjson.tool | colout -t json`
+  `echo '{"foo": "lorem", "bar":"ipsum"}' | python -mjson.tool | colout2 -t json`
 
 * Color a source code substring:
-  `echo "There is an error in 'static void Functor::operator()( EOT& indiv ) { return indiv; }' you should fix it" | colout "'(.*)'" Cpp monokai`
+  `echo "There is an error in 'static void Functor::operator()( EOT& indiv ) { return indiv; }' you should fix it" | colout2 "'(.*)'" Cpp monokai`
 
 * Color the percent of progress part of a CMake's makefile output, with a color
   related to the value of the progress (from 0%=blue to 100%=red):
-  `cmake .. && make | colout "^(\[\s*[0-9]+%\])" Scale`
+  `cmake .. && make | colout2 "^(\[\s*[0-9]+%\])" Scale`
 
 * Color hosts and users in `auth.log`, with consistent colors:
-  `cat /var/log/auth.log | colout "^(\S+\s+){3}(\S+)\s(\S+\s+){3}(\S+)\s+(\S+\s+){2}(\S+)\s*" none,hash,none,hash,none,hash`
+  `cat /var/log/auth.log | colout2 "^(\S+\s+){3}(\S+)\s(\S+\s+){3}(\S+)\s+(\S+\s+){2}(\S+)\s*" none,hash,none,hash,none,hash`
 
 
 ### Bash alias
@@ -261,7 +261,7 @@ cmake and g++ themes:
     function cm()
     {
         set -o pipefail
-        $@ 2>&1  | colout -t cmake | colout -t g++
+        $@ 2>&1  | colout2 -t cmake | colout2 -t g++
     }
 
 You then can use the `cm` alias as a prefix to your build command,
@@ -270,15 +270,15 @@ for example: `cm make test`
 
 ### Themes
 
-You can easily add your own theme to colout.
+You can easily add your own theme to colout2.
 A theme is basically a module with a function named `theme` that take the configuration context as an argument and
 return back the (modified) context and a list of triplets.
 Each triplet figures the same arguments than those of the command line interface.
 
     def theme(context):
-        return context,[ [regexp, colors, styles] ]
+        return context,[ ThemeEntry(regexp, colors, styles) ]
 
-With the context dictionary at hand, you have access to the internal configuration of colout, you can thus change colormaps for
+With the context dictionary at hand, you have access to the internal configuration of colout2, you can thus change colormaps for
 special keywords, the scale, even the available colors, styles or themes.
 
 See the cmake theme for how to modify an existing colormap if (and only if) the user didn't ask for an
@@ -289,7 +289,7 @@ See the gcc theme for an example of how to use the localization of existing soft
 
 ### Buffering
 
-Note that when you use colout within real time streams (like `tail -f X | qrep Y | colout Y`) of commands,
+Note that when you use colout2 within real time streams (like `tail -f X | qrep Y | colout2 Y`) of commands,
 you may observe that the lines are printed by large chunks and not one by one, in real time.
-This is not due to colout but to the buffering behavior of your shell.
-To fix that, use `stdbuf`, for example: `tail -f X | stdbuf -o0 grep Y | colout Y`.
+This is not due to colout2 but to the buffering behavior of your shell.
+To fix that, use `stdbuf`, for example: `tail -f X | stdbuf -o0 grep Y | colout2 Y`.
