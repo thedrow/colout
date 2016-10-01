@@ -19,8 +19,8 @@ packages = ['colout']
 requires = ['argparse', 'pygments', 'babel']
 
 setup(
-    name='colout',
-    version='0.1',
+    name='colout2',
+    version='1.0',
     description='Color Up Arbitrary Command Output.',
     long_description=open('README.md').read(),
     author='nojhan',
@@ -29,9 +29,13 @@ setup(
     packages=packages,
     package_data={'': ['LICENSE']},
     package_dir={'colout': 'colout'},
-    scripts=['bin/colout'],
     include_package_data=True,
     install_requires=requires,
     license=open('LICENSE').read(),
+    entry_points={
+        'console_scripts': [
+            'colout = colout.__main__:main'
+        ]
+    },
     zip_safe=False,
 )

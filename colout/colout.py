@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#encoding: utf-8
+# encoding: utf-8
 
 # Color Up Arbitrary Command Output
 # Licensed under the GPL version 3
@@ -21,8 +21,7 @@ import argparse
 
 # set the SIGPIPE handler to kill the program instead of
 # ending in a write error when a broken pipe occurs
-signal.signal( signal.SIGPIPE, signal.SIG_DFL )
-
+signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 ###############################################################################
 # Global variable(s)
@@ -30,6 +29,7 @@ signal.signal( signal.SIGPIPE, signal.SIG_DFL )
 
 context = {}
 debug = False
+highlight = None
 
 # Available styles
 context["styles"] = {
@@ -40,7 +40,7 @@ context["styles"] = {
 
 # Available color names in 8-colors mode
 context["colors"] = {
-    "black": 0, "red": 1, "green": 2, "yellow": 3, "orange":3, "blue": 4,
+    "black": 0, "red": 1, "green": 2, "yellow": 3, "orange": 3, "blue": 4,
     "magenta": 5, "purple": 5, "cyan": 6, "white": 7, "none": -1
 }
 
@@ -51,17 +51,19 @@ context["themes"] = {}
 # 256-colors mode should start with an upper-case letter (and should contains indexed colors)
 context["colormaps"] = {
     # Rainbows
-    "rainbow" : ["magenta", "blue", "cyan", "green", "yellow", "red"],
-    "Rainbow" : [92, 93, 57, 21, 27, 33, 39, 45, 51, 50, 49, 48, 47, 46, 82, 118, 154, 190, 226, 220, 214, 208, 202, 196],
+    "rainbow": ["magenta", "blue", "cyan", "green", "yellow", "red"],
+    "Rainbow": [92, 93, 57, 21, 27, 33, 39, 45, 51, 50, 49, 48, 47, 46, 82, 118, 154, 190, 226, 220, 214, 208, 202,
+                196],
 
     # From magenta to red, with white in the middle
-    "spectrum" : ["magenta", "blue", "cyan", "white", "green", "yellow", "red"],
-    "Spectrum" : [91, 92, 56, 57, 21, 27, 26, 32, 31, 37, 36, 35, 41, 40, 41, 77, 83, 84, 120, 121, 157, 194, 231, 254, 255, 231, 230, 229, 228, 227, 226, 220, 214, 208, 202, 196],
+    "spectrum": ["magenta", "blue", "cyan", "white", "green", "yellow", "red"],
+    "Spectrum": [91, 92, 56, 57, 21, 27, 26, 32, 31, 37, 36, 35, 41, 40, 41, 77, 83, 84, 120, 121, 157, 194, 231, 254,
+                 255, 231, 230, 229, 228, 227, 226, 220, 214, 208, 202, 196],
 
     # All the colors are available for the default `random` special
-    "random" : context["colors"],
-    "Random" : list(range(256))
-} # colormaps
+    "random": context["colors"],
+    "Random": list(range(256))
+}  # colormaps
 
 context["colormaps"]["scale"] = context["colormaps"]["spectrum"]
 context["colormaps"]["Scale"] = context["colormaps"]["Spectrum"]
@@ -74,15 +76,18 @@ context["user_defined_colormaps"] = False
 
 context["colormap_idx"] = 0
 
-context["scale"] = (0,100)
+context["scale"] = (0, 100)
 
 context["lexers"] = []
+
 
 class UnknownColor(Exception):
     pass
 
+
 class DuplicatedPalette(Exception):
     pass
+
 
 class DuplicatedTheme(Exception):
     pass
@@ -93,22 +98,22 @@ class DuplicatedTheme(Exception):
 ###############################################################################
 
 
-def set_special_colormaps( cmap ):
+def set_special_colormaps(cmap):
     """Change all the special colors to a single colormap (which must be a list of colors)."""
     global context
-    context["colormaps"]["scale"]   = cmap
-    context["colormaps"]["Scale"]   = cmap
-    context["colormaps"]["hash"]    = cmap
-    context["colormaps"]["Hash"]    = cmap
+    context["colormaps"]["scale"] = cmap
+    context["colormaps"]["Scale"] = cmap
+    context["colormaps"]["hash"] = cmap
+    context["colormaps"]["Hash"] = cmap
     context["colormaps"]["default"] = cmap
     context["colormaps"]["Default"] = cmap
     context["colormaps"]["random"] = cmap
     context["colormaps"]["Random"] = cmap
     context["user_defined_colormaps"] = True
-    logging.debug("user-defined special colormap: %s" % ",".join([str(i) for i in cmap]) )
+    logging.debug("user-defined special colormap: %s" % ",".join([str(i) for i in cmap]))
 
 
-def parse_gimp_palette( filename ):
+def parse_gimp_palette(filename):
     """
     Parse the given filename as a GIMP palette (.gpl)
 
@@ -121,10 +126,10 @@ def parse_gimp_palette( filename ):
     logging.debug("parse GIMP palette file: %s" % filename)
     fd = open(filename)
     # remove path and extension, only keep the file name itself
-    name = os.path.splitext( os.path.basename(filename ))[0]
+    name = os.path.splitext(os.path.basename(filename))[0]
 
     # The first .gpl line is a header
-    assert( fd.readline().strip() == "GIMP Palette" )
+    assert (fd.readline().strip() == "GIMP Palette")
 
     # Then the full name of the palette
     long_name = fd.readline().strip()
@@ -133,27 +138,27 @@ def parse_gimp_palette( filename ):
     # split on colon, take the second argument as an int
     line = fd.readline()
     if "Columns:" in line:
-        columns = int( line.strip().split(":")[1].strip() )
+        columns = int(line.strip().split(":")[1].strip())
         lines = fd.readlines()
     else:
-        columns=3
+        columns = 3
         lines = [line] + fd.readlines()
 
     # Then the colors themselves.
     palette = []
     for line in lines:
         # skip lines with only a comment
-        if re.match("^\s*#.*$", line ):
+        if re.match("^\s*#.*$", line):
             continue
         # decode the columns-ths codes. Generally [R G B] followed by a comment
-        colors = [ int(c) for c in line.split()[:columns] ]
-        palette.append( colors )
+        colors = [int(c) for c in line.split()[:columns]]
+        palette.append(colors)
 
-    logging.debug("parsed %i RGB colors from palette %s" % (len(palette), name) )
-    return name,palette
+    logging.debug("parsed %i RGB colors from palette %s" % (len(palette), name))
+    return name, palette
 
 
-def uniq( lst ):
+def uniq(lst):
     """Build a list with uniques consecutive elements in the argument.
 
         >>> uniq([1,1,2,2,2,3])
@@ -161,15 +166,15 @@ def uniq( lst ):
         >>> uniq([0,1,1,2,3,3,3])
         [0,1,2,3]
     """
-    assert( len(lst) > 0 )
-    uniq = [ lst[0] ]
-    for i in range(1,len(lst)):
-        if lst[i] != lst[i-1]:
+    assert (len(lst) > 0)
+    uniq = [lst[0]]
+    for i in range(1, len(lst)):
+        if lst[i] != lst[i - 1]:
             uniq.append(lst[i])
     return uniq
 
 
-def rgb_to_ansi( r, g, b ):
+def rgb_to_ansi(r, g, b):
     """Convert a RGB color to its closest 256-colors ANSI index"""
 
     # Range limits for the *colored* section of ANSI,
@@ -179,7 +184,7 @@ def rgb_to_ansi( r, g, b ):
 
     # ansi_max is the higher possible RGB value for ANSI *colors*
     # limit RGB values to ansi_max
-    red,green,blue = tuple([ansi_max if c>ansi_max else c for c in (r,g,b)])
+    red, green, blue = tuple([ansi_max if c > ansi_max else c for c in (r, g, b)])
 
     offset = 42.5
     is_gray = True
@@ -190,11 +195,11 @@ def rgb_to_ansi( r, g, b ):
         offset += 42.5
 
     if all_gray:
-        val = ansi_max + round( (red + green + blue)/33.0 )
+        val = ansi_max + round((red + green + blue) / 33.0)
         res = int(val)
     else:
         val = ansi_min
-        for color,modulo in zip( [red, green, blue], [6*6, 6, 1] ):
+        for color, modulo in zip([red, green, blue], [6 * 6, 6, 1]):
             val += round(6.0 * (color / 256.0)) * modulo
         res = int(val)
 
@@ -202,43 +207,43 @@ def rgb_to_ansi( r, g, b ):
 
 
 def hex_to_rgb(h):
-    assert( h[0] == "#" )
+    assert (h[0] == "#")
     h = h.lstrip('#')
     lh = len(h)
-    return tuple( int(h[i:i+lh//3], 16) for i in range(0, lh, lh//3) )
+    return tuple(int(h[i:i + lh // 3], 16) for i in range(0, lh, lh // 3))
 
 
 ###############################################################################
 # Load available extern resources
 ###############################################################################
 
-def load_themes( themes_dir):
+def load_themes(themes_dir):
     global context
     logging.debug("search for themes in: %s" % themes_dir)
-    os.chdir( themes_dir )
-    sys.path.append( themes_dir )
+    os.chdir(themes_dir)
+    sys.path.append(themes_dir)
 
     # load available themes
     for f in glob.iglob("colout_*.py"):
-        module = ".".join(f.split(".")[:-1]) # remove extension
-        name = "_".join(module.split("_")[1:]) # remove the prefix
+        module = ".".join(f.split(".")[:-1])  # remove extension
+        name = "_".join(module.split("_")[1:])  # remove the prefix
         if name in context["themes"]:
             raise DuplicatedTheme(name)
         logging.debug("load theme %s" % name)
         context["themes"][name] = importlib.import_module(module)
 
 
-def load_palettes( palettes_dir, ignore_duplicates = True ):
+def load_palettes(palettes_dir, ignore_duplicates=True):
     global context
     logging.debug("search for palettes in: %s" % palettes_dir)
-    os.chdir( palettes_dir )
+    os.chdir(palettes_dir)
 
     # load available colormaps (GIMP palettes format)
     for p in glob.iglob("*.gpl"):
         try:
-            name,palette = parse_gimp_palette(p)
+            name, palette = parse_gimp_palette(p)
         except Exception as e:
-            logging.warning("error while parsing palette %s: %s" % ( p,e ) )
+            logging.warning("error while parsing palette %s: %s" % (p, e))
             continue
         if name in context["colormaps"]:
             if ignore_duplicates:
@@ -246,7 +251,7 @@ def load_palettes( palettes_dir, ignore_duplicates = True ):
             else:
                 raise DuplicatedPalette(name)
         # Convert the palette to ANSI
-        ansi_palette = [ rgb_to_ansi(r,g,b) for r,g,b in palette ]
+        ansi_palette = [rgb_to_ansi(r, g, b) for r, g, b in palette]
         # Compress it so that there isn't two consecutive identical colors
         compressed = uniq(ansi_palette)
         logging.debug("load %i ANSI colors in palette %s: %s" % (len(compressed), name, compressed))
@@ -288,9 +293,9 @@ def load_lexers():
     context["lexers"] = lexers
 
 
-def load_resources( themes_dir, palettes_dir ):
-    load_themes( themes_dir )
-    load_palettes( palettes_dir )
+def load_resources(themes_dir, palettes_dir):
+    load_themes(themes_dir)
+    load_palettes(palettes_dir)
     load_lexers()
 
 
@@ -298,10 +303,10 @@ def load_resources( themes_dir, palettes_dir ):
 # Library
 ###############################################################################
 
-def mode( color ):
+def mode(color):
     global context
     if type(color) is int:
-        if 0 <= color and color <= 255 :
+        if 0 <= color and color <= 255:
             return 256
         else:
             raise UnknownColor(color)
@@ -312,26 +317,26 @@ def mode( color ):
             return 8
         elif color[0].isupper():
             return 256
-    elif color.lower() in ("scale","hash","random") or color.lower() in context["lexers"]:
+    elif color.lower() in ("scale", "hash", "random") or color.lower() in context["lexers"]:
         if color[0].islower():
             return 8
         elif color[0].isupper():
             return 256
     elif color[0] == "#":
         return 256
-    elif color.isdigit() and (0 <= int(color) and int(color) <= 255) :
+    elif color.isdigit() and (0 <= int(color) and int(color) <= 255):
         return 256
     else:
         raise UnknownColor(color)
 
 
-def next_in_map( color ):
+def next_in_map(color):
     global context
     # loop over indices in colormap
-    return (context["colormap_idx"]+1) % len(context["colormaps"][color])
+    return (context["colormap_idx"] + 1) % len(context["colormaps"][color])
 
 
-def color_random( color ):
+def color_random(color):
     global context
     m = mode(color)
     if m == 8:
@@ -346,7 +351,7 @@ def color_random( color ):
     return color_code
 
 
-def color_in_colormaps( color ):
+def color_in_colormaps(color):
     global context
     m = mode(color)
     if m == 8:
@@ -358,14 +363,14 @@ def color_in_colormaps( color ):
 
     else:
         color_nb = context["colormaps"][color][context["colormap_idx"]]
-        color_code = str( color_nb )
+        color_code = str(color_nb)
 
     context["colormap_idx"] = next_in_map(color)
 
     return color_code
 
 
-def color_scale( name, text ):
+def color_scale(name, text):
     # filter out everything that does not seem to be necessary to interpret the string as a number
     # this permits to transform "[ 95%]" to "95" before number conversion,
     # and thus allows to color a group larger than the matched number
@@ -393,7 +398,7 @@ def color_scale( name, text ):
             pass
     if f is not None:
         # normalize with scale if it's a number
-        f = (f - context["scale"][0]) / (context["scale"][1]-context["scale"][0])
+        f = (f - context["scale"][0]) / (context["scale"][1] - context["scale"][0])
     else:
         # interpret as float between 0 and 1 otherwise
         f = eval(nb)
@@ -404,7 +409,7 @@ def color_scale( name, text ):
 
     # normalize and scale over the nb of colors in cmap
     colormap = context["colormaps"][name]
-    i = int( math.ceil( f * (len(colormap)-1) ) )
+    i = int(math.ceil(f * (len(colormap) - 1)))
     color = colormap[i]
 
     # infer mode from the color in the colormap
@@ -418,16 +423,16 @@ def color_scale( name, text ):
     return color_code
 
 
-def color_hash( name, text ):
+def color_hash(name, text):
     hasher = hashlib.md5()
     hasher.update(text.encode('utf-8'))
     hash = hasher.hexdigest()
 
-    f = float(functools.reduce(lambda x, y: x+ord(y), hash, 0) % 101)
+    f = float(functools.reduce(lambda x, y: x + ord(y), hash, 0) % 101)
 
     # normalize and scale over the nb of colors in cmap
     colormap = context["colormaps"][name]
-    i = int( math.ceil( (f - context["scale"][0]) / (context["scale"][1]-context["scale"][0]) * (len(colormap)-1) ) )
+    i = int(math.ceil((f - context["scale"][0]) / (context["scale"][1] - context["scale"][0]) * (len(colormap) - 1)))
     color = colormap[i]
 
     # infer mode from the color in the colormap
@@ -451,7 +456,7 @@ def color_map(name):
         color_code = str(30 + context["colors"][color])
     else:
         color_nb = int(color)
-        assert( 0 <= color_nb <= 255 )
+        assert (0 <= color_nb <= 255)
         color_code = str(color_nb)
 
     context["colormap_idx"] = next_in_map(color)
@@ -459,7 +464,7 @@ def color_map(name):
     return color_code
 
 
-def color_lexer( name, style, text ):
+def color_lexer(name, style, text):
     lexer = get_lexer_by_name(name.lower())
     # Python => 256 colors, python => 8 colors
     m = mode(name)
@@ -469,15 +474,15 @@ def color_lexer( name, style, text ):
         except:  # style not found
             formatter = Terminal256Formatter()
     else:
-        if style not in ("light","dark"):
-            style = "dark" # dark color scheme by default
+        if style not in ("light", "dark"):
+            style = "dark"  # dark color scheme by default
         formatter = TerminalFormatter(bg=style)
         # We should return all but the last character,
         # because Pygments adds a newline char.
     if not debug:
         return highlight(text, lexer, formatter)[:-1]
     else:
-        return "<"+name+">"+ highlight(text, lexer, formatter)[:-1] + "</"+name+">"
+        return "<" + name + ">" + highlight(text, lexer, formatter)[:-1] + "</" + name + ">"
 
 
 def colorin(text, color="red", style="normal"):
@@ -495,7 +500,7 @@ def colorin(text, color="red", style="normal"):
     '\x1b[0;38;5;41mFaites chier la vache\x1b[0m'
     """
 
-    assert( type(color) is str )
+    assert (type(color) is str)
 
     global debug
 
@@ -524,17 +529,17 @@ def colorin(text, color="red", style="normal"):
         if not debug:
             return text
         else:
-            return "<none>"+text+"</none>"
+            return "<none>" + text + "</none>"
 
     elif color.lower() == "random":
-        color_code = color_random( color )
+        color_code = color_random(color)
 
-    elif color.lower() == "scale": # "scale" or "Scale"
-        color_code = color_scale( color, text )
+    elif color.lower() == "scale":  # "scale" or "Scale"
+        color_code = color_scale(color, text)
 
     # "hash" or "Hash"; useful to randomly but consistently color strings
     elif color.lower() == "hash":
-        color_code = color_hash( color, text )
+        color_code = color_hash(color, text)
 
     # Really useful only when using colout as a library
     # thus you can change the "colormap" variable to your favorite one before calling colorin
@@ -545,7 +550,7 @@ def colorin(text, color="red", style="normal"):
     # because special tags are also registered as colormaps,
     # but do not have the same simple behavior.
     elif color in context["colormaps"].keys():
-        color_code = color_in_colormaps( color )
+        color_code = color_in_colormaps(color)
 
     # 8 colors modes
     elif color in context["colors"]:
@@ -554,19 +559,19 @@ def colorin(text, color="red", style="normal"):
     # hexadecimal color
     elif color[0] == "#":
         color_nb = rgb_to_ansi(*hex_to_rgb(color))
-        assert(0 <= color_nb <= 255)
+        assert (0 <= color_nb <= 255)
         color_code = str(color_nb)
 
     # 256 colors mode
     elif color.isdigit():
         color_nb = int(color)
-        assert(0 <= color_nb <= 255)
+        assert (0 <= color_nb <= 255)
         color_code = str(color_nb)
 
     # programming language
     elif color.lower() in context["lexers"]:
         # bypass color encoding and return text colored by the lexer
-        return color_lexer(color,style,text)
+        return color_lexer(color, style, text)
 
     # unrecognized
     else:
@@ -577,10 +582,10 @@ def colorin(text, color="red", style="normal"):
             return start + style_code + endmarks[m] + color_code + "m" + text + stop
         else:
             return start + style_code + endmarks[m] + color_code + "m" \
-                    + "<color name=" + str(color) + " code=" + color_code \
-                    + " style=" + str(style) + " stylecode=" + style_code \
-                    + " mode=" + str(m) + ">" \
-                    + text + "</color>" + stop
+                   + "<color name=" + str(color) + " code=" + color_code \
+                   + " style=" + str(style) + " stylecode=" + style_code \
+                   + " mode=" + str(m) + ">" \
+                   + text + "</color>" + stop
     else:
         if not debug:
             return text
@@ -665,10 +670,10 @@ def colorup(text, pattern, color="red", style="normal", on_groups=False):
             # Note that match.groups returns a tuple (thus being indexed in [0,n[),
             # but that match.start(0) refers to the whole match, the groups being indexed in [1,n].
             # Thus, we need to range in [1,n+1[.
-            for group in range(1, nb_groups+1):
+            for group in range(1, nb_groups + 1):
                 # If a group didn't match, there's nothing to color
                 if match.group(group) is not None:
-                    partial, end = colorout(text, match, end, group_colors[group-1], group_styles[group-1], group)
+                    partial, end = colorout(text, match, end, group_colors[group - 1], group_styles[group - 1], group)
                     colored_text += partial
 
     # Append the remaining part of the text, if any.
@@ -694,7 +699,7 @@ def colortheme(item, theme):
     return item
 
 
-def write(colored, stream = sys.stdout):
+def write(colored, stream=sys.stdout):
     """
     Write "colored" on sys.stdout, then flush.
     """
@@ -710,7 +715,7 @@ def write(colored, stream = sys.stdout):
             pass
 
 
-def map_write( stream_in, stream_out, function, *args ):
+def map_write(stream_in, stream_out, function, *args):
     """
     Read the given file-like object as a non-blocking stream
     and call the function on each item (line),
@@ -730,7 +735,7 @@ def map_write( stream_in, stream_out, function, *args ):
             break
         if not item:
             break
-        write( function(item, *args), stream_out )
+        write(function(item, *args), stream_out)
 
 
 def colorgen(stream, pattern, color="red", style="normal", on_groups=False):
@@ -765,60 +770,60 @@ def _args_parse(argv, usage=""):
         description=usage)
 
     parser.add_argument("pattern", metavar="REGEX", type=str, nargs=1,
-            help="A regular expression")
+                        help="A regular expression")
 
-    pygments_warn=" You can use a language name to activate syntax coloring (see `-r all` for a list)."
+    pygments_warn = " You can use a language name to activate syntax coloring (see `-r all` for a list)."
     try:
         import pygments
     except ImportError:
-        pygments_warn=" (WARNING: python3-pygments is not available, \
+        pygments_warn = " (WARNING: python3-pygments is not available, \
                 install it if you want to be able to use syntax coloring)"
 
     parser.add_argument("color", metavar="COLOR", type=str, nargs='?',
-            default="red",
-            help="A number in [0…255], a color name, a colormap name, \
+                        default="red",
+                        help="A number in [0…255], a color name, a colormap name, \
             a palette or a comma-separated list of those values." + pygments_warn)
 
     parser.add_argument("style", metavar="STYLE", type=str, nargs='?',
-            default="bold",
-            help="One of the available styles or a comma-separated list of styles.")
+                        default="bold",
+                        help="One of the available styles or a comma-separated list of styles.")
 
     parser.add_argument("-g", "--groups", action="store_true",
-            help="For color maps (random, rainbow, etc.), iterate over matching groups \
+                        help="For color maps (random, rainbow, etc.), iterate over matching groups \
                 in the pattern instead of over patterns")
 
     parser.add_argument("-c", "--colormap", action="store_true",
-            help="Interpret the given COLOR comma-separated list of colors as a colormap \
+                        help="Interpret the given COLOR comma-separated list of colors as a colormap \
                 (cycle the colors at each match)")
 
-    babel_warn=" (numbers will be parsed according to your locale)"
+    babel_warn = " (numbers will be parsed according to your locale)"
     try:
         # babel is a specialized module
         import babel.numbers
     except ImportError:
-        babel_warn=" (WARNING: python3-babel is not available, install it \
+        babel_warn = " (WARNING: python3-babel is not available, install it \
         if you want to be able to parse numbers according to your locale)"
 
     parser.add_argument("-l", "--scale", metavar="SCALE",
-            help="When using the 'scale' colormap, parse matches as decimal numbers \
+                        help="When using the 'scale' colormap, parse matches as decimal numbers \
                 and apply the rainbow colormap linearly between the given SCALE=min,max" + babel_warn)
 
     parser.add_argument("-a", "--all", action="store_true",
-            help="Color the whole input at once instead of line per line \
+                        help="Color the whole input at once instead of line per line \
                 (really useful for coloring a source code file with strings \
                 on multiple lines).")
 
     parser.add_argument("-t", "--theme", action="store_true",
-            help="Interpret REGEX as a theme.")
+                        help="Interpret REGEX as a theme.")
 
     parser.add_argument("-T", "--themes-dir", metavar="DIR", action="append",
-            help="Search for additional themes (colout_*.py files) in the given directory")
+                        help="Search for additional themes (colout_*.py files) in the given directory")
 
     parser.add_argument("-P", "--palettes-dir", metavar="DIR", action="append",
-            help="Search for additional palettes (*.gpl files) in the given directory")
+                        help="Search for additional palettes (*.gpl files) in the given directory")
 
     parser.add_argument("-d", "--default", metavar="COLORMAP", default=None,
-            help="When using special colormaps (`random`, `scale` or `hash`), use this COLORMAP. \
+                        help="When using special colormaps (`random`, `scale` or `hash`), use this COLORMAP. \
                 This can be either one of the available colormaps or a comma-separated list of colors. \
                 WARNING: be sure to specify a default colormap that is compatible with the special colormap's mode.")
 
@@ -827,18 +832,18 @@ def _args_parse(argv, usage=""):
     # we use it as the argument to this option.
     # The only drawback is that the help message lacks a metavar...
     parser.add_argument("-r", "--resources", action="store_true",
-            help="Print the names of available resources. Use a comma-separated list of resources names \
+                        help="Print the names of available resources. Use a comma-separated list of resources names \
             (styles, colors, special, themes, palettes, colormaps or lexers), \
             use 'all' to print everything.")
 
     parser.add_argument("-s", "--source", action="store_true",
-            help="Interpret REGEX as a source code readable by the Pygments library. \
+                        help="Interpret REGEX as a source code readable by the Pygments library. \
             If the first letter of PATTERN is upper case, use the 256 colors mode, \
             if it is lower case, use the 8 colors mode. \
             Interpret COLOR as a Pygments style." + pygments_warn)
 
     parser.add_argument("--debug", action="store_true",
-            help="Debug mode: print what's going on internally, useful if you want to check what features are available.")
+                        help="Debug mode: print what's going on internally, useful if you want to check what features are available.")
 
     args = parser.parse_args()
 
@@ -847,182 +852,12 @@ def _args_parse(argv, usage=""):
            args.themes_dir, args.default
 
 
-def write_all( as_all, stream_in, stream_out, function, *args ):
+def write_all(as_all, stream_in, stream_out, function, *args):
     """
     If as_all, print function(*args) on the whole stream,
     else, print it for each line.
     """
     if as_all:
-        write( function( stream_in.read(), *args ), stream_out )
+        write(function(stream_in.read(), *args), stream_out)
     else:
-        map_write( stream_in, stream_out, function, *args )
-
-
-if __name__ == "__main__":
-
-    error_codes = {"UnknownColor":1, "DuplicatedPalette":2}
-
-    usage = "A regular expression based formatter that color up an arbitrary text stream."
-
-    #####################
-    # Arguments parsing #
-    #####################
-    pattern, color, style, on_groups, as_colormap, as_theme, as_source, as_all, myscale, \
-    debug, resources, palettes_dirs, themes_dirs, default_colormap \
-        = _args_parse(sys.argv, usage)
-
-    if debug:
-        lvl = logging.DEBUG
-    else:
-        lvl = logging.ERROR
-
-    logging.basicConfig(format='[colout] %(levelname)s: %(message)s', level=lvl)
-
-
-    ##################
-    # Load resources #
-    ##################
-    try:
-        # Search for available resources files (themes, palettes)
-        # in the same dir as the colout.py script
-        res_dir = os.path.dirname(os.path.realpath(__file__))
-
-        # this must be called before args parsing, because the help can list available resources
-        load_resources( res_dir, res_dir )
-
-        # try additional directories if asked
-        if palettes_dirs:
-            for adir in palettes_dirs:
-                try:
-                    os.chdir( adir )
-                except OSError as e:
-                    logging.warning("cannot read palettes directory %s, ignore it" % adir)
-                    continue
-                else:
-                    load_palettes( adir )
-
-        if themes_dirs:
-            for adir in themes_dirs:
-                try:
-                    os.chdir( adir )
-                except OSError as e:
-                    logging.warning("cannot read themes directory %s, ignore it" % adir)
-                    continue
-                else:
-                    load_themes( adir )
-
-    except DuplicatedPalette as e:
-        logging.error( "duplicated palette file name: %s" % e )
-        sys.exit( error_codes["DuplicatedPalette"] )
-
-    if resources:
-        asked=[r.lower() for r in pattern.split(",")]
-
-        def join_sort( l ):
-            """
-            Sort the given list in lexicographical order,
-            with upper-cases first, then lower cases
-            join the list with a comma.
-
-            >>> join_sort(["a","B","A","b"])
-            'A, a, B, b'
-            """
-            return ", ".join(sorted(l, key=lambda s: s.lower()+s))
-
-        # print("Available resources:")
-        for res in asked:
-            if "style" in res or "all" in res:
-                print("STYLES: %s" % join_sort(context["styles"]) )
-
-            if "color" in res or "all" in res:
-                print("COLORS: %s" % join_sort(context["colors"]) )
-
-            if "special" in res or "all" in res:
-                print("SPECIAL: %s" % join_sort(["random", "Random", "scale", "Scale", "hash", "Hash", "colormap"]) )
-
-            if "theme" in res or "all" in res:
-                if len(context["themes"]) > 0:
-                    print("THEMES: %s" % join_sort(context["themes"].keys()) )
-                else:
-                    print("NO THEME")
-
-            if "colormap" in res or "all" in res:
-                if len(context["colormaps"]) > 0:
-                    print("COLORMAPS: %s" % join_sort(context["colormaps"]) )
-                else:
-                    print("NO COLORMAPS")
-
-            if "lexer" in res or "all" in res:
-                if len(context["lexers"]) > 0:
-                    print("SYNTAX COLORING: %s" % join_sort(context["lexers"]) )
-                else:
-                    print("NO SYNTAX COLORING (check that python3-pygments is installed)")
-
-        sys.exit(0) # not an error, we asked for help
-
-    ############
-    # Coloring #
-    ############
-
-    try:
-        if myscale:
-            context["scale"] = tuple([float(i) for i in myscale.split(",")])
-            logging.debug("user-defined scale: %f,%f" % context["scale"])
-
-        # Default color maps
-        if default_colormap:
-            if default_colormap not in context["colormaps"]:
-                cmap = default_colormap.split(",")
-
-            elif default_colormap in context["colormaps"]:
-                cmap = context["colormaps"][default_colormap]
-
-            set_special_colormaps( cmap )
-
-        # explicit color map
-        if as_colormap is True and color not in context["colormaps"]:
-            context["colormaps"]["Default"] = color.split(",")  # replace the colormap by the given colors
-            context["colormaps"]["default"] = color.split(",")  # replace the colormap by the given colors
-            color = "colormap"  # use the keyword to switch to colormap instead of list of colors
-            logging.debug("used-defined default colormap: %s" % ",".join(context["colormaps"]["Default"]) )
-
-        # if theme
-        if as_theme:
-            logging.debug( "asked for theme: %s" % pattern )
-            assert(pattern in context["themes"].keys())
-            context,theme = context["themes"][pattern].theme(context)
-            write_all( as_all, sys.stdin, sys.stdout, colortheme, theme )
-
-        # if pygments
-        elif as_source:
-            logging.debug("asked for lexer: %s" % pattern.lower())
-            assert(pattern.lower() in context["lexers"])
-            lexer = get_lexer_by_name(pattern.lower())
-            # Python => 256 colors, python => 8 colors
-            ask_256 = pattern[0].isupper()
-            if ask_256:
-                logging.debug("256 colors mode")
-                try:
-                    formatter = Terminal256Formatter(style=color)
-                except:  # style not found
-                    logging.warning("style %s not found, fallback to default style" % color)
-                    formatter = Terminal256Formatter()
-            else:
-                logging.debug("8 colors mode")
-                formatter = TerminalFormatter()
-
-            write_all( as_all, sys.stdin, sys.stdout, highlight, lexer, formatter )
-
-        # if color
-        else:
-            write_all( as_all, sys.stdin, sys.stdout, colorup, pattern, color, style, on_groups )
-
-    except UnknownColor as e:
-        if debug:
-            import traceback
-            for var in context:
-                print(var,context[var])
-            print(traceback.format_exc())
-        logging.error("unknown color: %s (maybe you forgot to install python3-pygments?)" % e )
-        sys.exit( error_codes["UnknownColor"] )
-
+        map_write(stream_in, stream_out, function, *args)
