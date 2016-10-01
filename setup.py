@@ -20,12 +20,12 @@ requires = ['argparse', 'pygments', 'babel']
 
 setup(
     name='colout2',
-    version='1.0',
+    version='1.0.1',
     description='Color Up Arbitrary Command Output.',
     long_description=open('README.md').read(),
-    author='nojhan',
-    author_email='nojhan@nojhan.net',
-    url='http://nojhan.github.com/colout2/',
+    author='Omer Katz',
+    author_email='omer.drow@gmail.com',
+    url='http://nojhan.github.com/colout/',
     packages=packages,
     package_data={'': ['LICENSE']},
     package_dir={'colout2': 'colout2'},
