@@ -27,7 +27,7 @@ setup(
     author_email='omer.drow@gmail.com',
     url='http://nojhan.github.com/colout/',
     packages=packages,
-    package_data={'': ['LICENSE']},
+    package_data={'': ['README.md', 'LICENSE']},
     package_dir={'colout2': 'colout2'},
     include_package_data=True,
     install_requires=requires,
