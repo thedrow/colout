@@ -21,6 +21,8 @@ import argparse
 
 # set the SIGPIPE handler to kill the program instead of
 # ending in a write error when a broken pipe occurs
+from collections import namedtuple
+
 signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 ###############################################################################
@@ -861,3 +863,7 @@ def write_all(as_all, stream_in, stream_out, function, *args):
         write(function(stream_in.read(), *args), stream_out)
     else:
         map_write(stream_in, stream_out, function, *args)
+
+
+ThemeEntry = namedtuple("ThemeEntry", "regex,color,style")
+ThemeEntry.__new__.__defaults__ = (None,) * len(ThemeEntry._fields)

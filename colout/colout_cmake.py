@@ -1,3 +1,6 @@
+from colout.colout import ThemeEntry
+
+
 def theme(context):
     # CMake theme:
     #  actions performing in cyan
@@ -16,38 +19,38 @@ def theme(context):
 
     return context, [
         # Configure...
-        ["^--.*works", performed],
-        ["^--.*done", performed],
-        ["^-- Found.*NO", "red"],
-        ["^-- Found.*", performed],
-        ["^--.*broken", "red"],
-        ["^-- Coult NOT find.*", "red"],
-        ["^-- Configuring incomplete, errors occurred!", "red"],
-        ["^--.*", performing],
+        ThemeEntry("^--.*works", performed),
+        ThemeEntry("^--.*done", performed),
+        ThemeEntry("^-- Found.*NO", "red"),
+        ThemeEntry("^-- Found.*", performed),
+        ThemeEntry("^--.*broken", "red"),
+        ThemeEntry("^-- Coult NOT find.*", "red"),
+        ThemeEntry("^-- Configuring incomplete, errors occurred!", "red"),
+        ThemeEntry("^--.*", performing),
         # Errors
-        ["CMake Error:", "red"],
-        ["CMake Warning", "yellow"],
+        ThemeEntry("CMake Error:", "red"),
+        ThemeEntry("CMake Warning", "yellow"),
         # Scan
-        ["^(Scanning dependencies of target)(.*)$",
-         performing, "normal,bold"],
+        ThemeEntry("^(Scanning dependencies of target)(.*)$",
+         performing, "normal,bold"),
         # Link (make)
-        ["^(Linking .* )(library|executable) (.*/)*(.+(\.[aso]+)*)$",
-         untimed, "normal,normal,bold"],
+        ThemeEntry("^(Linking .* )(library|executable) (.*/)*(.+(\.[aso]+)*)$",
+         untimed, "normal,normal,bold"),
         # [percent] Creating something
-        ["^\[\s*[0-9/]+%?\]\s(.*Creating.*)$",
-         performing, "normal"],
+        ThemeEntry("^\[\s*[0-9/]+%?\]\s(.*Creating.*)$",
+         performing, "normal"),
         # [percent] Built
-        ["^\[\s*[0-9/]+%?\]\s(Built target)(\s.*)$",
-         performed, "normal,bold"],
+        ThemeEntry("^\[\s*[0-9/]+%?\]\s(Built target)(\s.*)$",
+         performed, "normal,bold"),
         # [percent] Building
-        ["^\[\s*[0-9/]+%?\]\s(Building \w* object)\s+(.*)(\.dir)(.*/)([-\w]+).c.*.o$",
-         performing + "," + performing + "," + performing + ",Hash," + performing, "normal,normal,normal,normal,bold"],
+        ThemeEntry("^\[\s*[0-9/]+%?\]\s(Building \w* object)\s+(.*)(\.dir)(.*/)([-\w]+).c.*.o$",
+         performing + "," + performing + "," + performing + ",Hash," + performing, "normal,normal,normal,normal,bold"),
         # [percent] Generating
-        ["^\[\s*[0-9/]+%?\]\s(Generating)(\s+.*)$",
-         performing, "normal,bold"],
+        ThemeEntry("^\[\s*[0-9/]+%?\]\s(Generating)(\s+.*)$",
+         performing, "normal,bold"),
         # make errors
-        ["make\[[0-9]+\].*", "yellow"],
-        ["(make: \*\*\* \[.+\] )(.* [0-9]+)", "red", "normal,bold"],
+        ThemeEntry("make\[[0-9]+\].*", "yellow"),
+        ThemeEntry("(make: \*\*\* \[.+\] )(.* [0-9]+)", "red", "normal,bold"),
         # progress percentage (make)
-        ["^(\[\s*[0-9]+%\])", "Scale"]
+        ThemeEntry("^(\[\s*[0-9]+%\])", "Scale")
     ]

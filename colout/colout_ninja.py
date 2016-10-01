@@ -1,4 +1,5 @@
 import colout_cmake
+from colout.colout import ThemeEntry
 
 
 def theme(context):
@@ -11,9 +12,9 @@ def theme(context):
     context["scale"] = (0, 1)
 
     # Link (ninja)
-    th.append(["^\[[0-9/]+\]\s?(Linking .* )(library|executable) (.*/)*(.+(\.[aso]+)*)$",
-               "blue", "normal,normal,bold"])
+    th.append(ThemeEntry("^\[[0-9/]+\]\s?(Linking .* )(library|executable) (.*/)*(.+(\.[aso]+)*)$",
+               "blue", "normal,normal,bold"))
     # progress percentage (ninja)
-    th.append(["^(\[[0-9]+/[0-9]+\])", "Scale"])
+    th.append(ThemeEntry("^(\[[0-9]+/[0-9]+\])", "Scale"))
 
     return context, th

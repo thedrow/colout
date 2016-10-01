@@ -1,4 +1,6 @@
 # encoding: utf-8
+from colout.colout import ThemeEntry
+
 
 def default_gettext(msg):
     return msg
@@ -36,49 +38,49 @@ def theme(context):
 
     return context, [
         # Command line
-        ["[/\s]([cg]\+\+-*[0-9]*\.*[0-9]*)", "white", "bold"],
-        ["\s(\-D)(\s*[^\s]+\s)", "none,green", "normal,bold"],
-        ["\s-g\s", "green", "normal"],
-        ["\s-O[0-4]*\s", "green", "normal"],
-        ["\s-[Wf][^\s]*", "magenta", "normal"],
-        ["\s(-I)(/*[^\s]+/)([^/\s]+)", "none,blue", "normal,normal,bold"],
-        ["\s(-L)(/*[^\s]+/)([^/\s]+)", "none,cyan", "normal,normal,bold"],
-        ["\s(-l)([^/\s]+)", "none,cyan", "normal,bold"],
-        ["\s-[oc]", "red", "bold"],
-        ["\s(-+std)=*([^s]+)", "red", "normal,bold"],
+        ThemeEntry("[/\s]([cg]\+\+-*[0-9]*\.*[0-9]*)", "white", "bold"),
+        ThemeEntry("\s(\-D)(\s*[^\s]+\s)", "none,green", "normal,bold"),
+        ThemeEntry("\s-g\s", "green", "normal"),
+        ThemeEntry("\s-O[0-4]*\s", "green", "normal"),
+        ThemeEntry("\s-[Wf][^\s]*", "magenta", "normal"),
+        ThemeEntry("\s(-I)(/*[^\s]+/)([^/\s]+)", "none,blue", "normal,normal,bold"),
+        ThemeEntry("\s(-L)(/*[^\s]+/)([^/\s]+)", "none,cyan", "normal,normal,bold"),
+        ThemeEntry("\s(-l)([^/\s]+)", "none,cyan", "normal,bold"),
+        ThemeEntry("\s-[oc]", "red", "bold"),
+        ThemeEntry("\s(-+std)=*([^s]+)", "red", "normal,bold"),
 
         # Important messages
-        [_("error: "), "red", "bold"],
-        [_("fatal error: "), "red", "bold"],
-        [_("warning: "), "magenta", "bold"],
-        [_("undefined reference to "), "red", "bold"],
+        ThemeEntry(_("error: "), "red", "bold"),
+        ThemeEntry(_("fatal error: "), "red", "bold"),
+        ThemeEntry(_("warning: "), "magenta", "bold"),
+        ThemeEntry(_("undefined reference to "), "red", "bold"),
         # [-Wflag]
-        ["\[-W.*\]", "magenta"],
+        ThemeEntry("\[-W.*\]", "magenta"),
 
         # Highlight message start:
         #   path   file   ext     : line   :  col     …
-        ["(/.*?)/([^/:]+): (In .*)" + qo,
+        ThemeEntry("(/.*?)/([^/:]+): (In .*)" + qo,
          section,
-         "normal,normal,bold"],
+         "normal,normal,bold"),
 
-        ["(/.*?)/([^/:]+): (At .*)",
+        ThemeEntry("(/.*?)/([^/:]+): (At .*)",
          section,
-         "normal,normal,bold"],
+         "normal,normal,bold"),
 
-        [_("In file included from"), section],
+        ThemeEntry(_("In file included from"), section),
 
         # Highlight locations:
         #   path   file   ext     : line   :  col     …
-        ["(/.*?)/([^/:]+):([0-9]+):*([0-9]*)(.*)",
+        ThemeEntry("(/.*?)/([^/:]+):([0-9]+):*([0-9]*)(.*)",
          "none,white,yellow,none,none",
-         "normal,normal,normal,normal"],
+         "normal,normal,normal,normal"),
 
         # source code in single quotes
-        [qo + "(.*?)" + qc, "Cpp", "monokai"],
+        ThemeEntry(qo + r"(.*?)" + qc, "Cpp", "monokai"),
 
         # source code after a "note: candidate are/is:"
-        [_("note: ") + "((?!.*(" + qo + "|" + qc + ")).*)$", "Cpp", "monokai"],
-        # [ _("note: ")+"(candidate:)(.*)$", "green,Cpp", "normal,monokai" ],
+        ThemeEntry(_("note: ") + r"((?!.*(" + qo + "|" + qc + ")).*)$", "Cpp", "monokai"),
+        # [ _("note: ")+"(candidate:)(.*)$", "green,Cpp", "normal,monokai" ),
         # after the code part, to avoid matching ANSI escape chars
-        [_("note: "), "green", "normal"]
+        ThemeEntry(_("note: "), "green", "normal")
     ]

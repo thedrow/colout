@@ -1,12 +1,14 @@
 # encoding: utf-8
+from colout.colout import ThemeEntry
+
 
 def theme(context):
     return context, [
-        ["^(checking .*)(yes|found|ok)$", "green", "normal,bold"],
-        ["^(checking .*)(no|none)$", "yellow", "normal,bold"],
-        ["^(configure:) (error:)(.*)", "red", "normal,bold"],
-        ["^(configure:)(.*)", "magenta", "normal,bold"],
-        ["^(checking .*)", "blue", ""],
-        ["^(config.status:) (creating )(.*)", "cyan,blue", "normal,normal,bold"],
-        ["^(config.status:) (executing )(.*)", "cyan,green", "normal,normal,bold"],
+        ThemeEntry("^(checking .*)(yes|found|ok)$", "green", "normal,bold"),
+        ThemeEntry("^(checking .*)(no|none)$", "yellow", "normal,bold"),
+        ThemeEntry("^(configure:) (error:)(.*)", "red", "normal,bold"),
+        ThemeEntry("^(configure:)(.*)", "magenta", "normal,bold"),
+        ThemeEntry("^(checking .*)", "blue", ""),
+        ThemeEntry("^(config.status:) (creating )(.*)", "cyan,blue", "normal,normal,bold"),
+        ThemeEntry("^(config.status:) (executing )(.*)", "cyan,green", "normal,normal,bold"),
     ]
