@@ -1,5 +1,5 @@
 # encoding: utf-8
-from colout.colout import ThemeEntry
+from colout2.colout import ThemeEntry
 
 
 def theme(context):

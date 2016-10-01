@@ -7,12 +7,12 @@ from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexers import get_lexer_by_name
 
-from colout.colout import (UnknownColor, _args_parse, load_resources, load_palettes, load_themes, DuplicatedPalette,
+from colout2.colout import (UnknownColor, _args_parse, load_resources, load_palettes, load_themes, DuplicatedPalette,
                            write_all, set_special_colormaps, colortheme, colorup)
 
 
 def main():
-    from colout.colout import context, debug, highlight
+    from colout2.colout import context, debug, highlight
     global debug
     error_codes = {"UnknownColor": 1, "DuplicatedPalette": 2}
 
@@ -30,14 +30,14 @@ def main():
     else:
         lvl = logging.ERROR
 
-    logging.basicConfig(format='[colout] %(levelname)s: %(message)s', level=lvl)
+    logging.basicConfig(format='[colout2] %(levelname)s: %(message)s', level=lvl)
 
     ##################
     # Load resources #
     ##################
     try:
         # Search for available resources files (themes, palettes)
-        # in the same dir as the colout.py script
+        # in the same dir as the colout2.py script
         res_dir = os.path.dirname(os.path.realpath(__file__))
 
         # this must be called before args parsing, because the help can list available resources

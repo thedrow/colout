@@ -498,7 +498,7 @@ def colorin(text, color="red", style="normal"):
 
     >>> colorin("Fetchez la vache", "red", "bold")
     '\x1b[1;31mFetchez la vache\x1b[0m'
-    >>> colout.colorin("Faites chier la vache", 41, "normal")
+    >>> colout2.colorin("Faites chier la vache", 41, "normal")
     '\x1b[0;38;5;41mFaites chier la vache\x1b[0m'
     """
 
@@ -543,7 +543,7 @@ def colorin(text, color="red", style="normal"):
     elif color.lower() == "hash":
         color_code = color_hash(color, text)
 
-    # Really useful only when using colout as a library
+    # Really useful only when using colout2 as a library
     # thus you can change the "colormap" variable to your favorite one before calling colorin
     elif color == "colormap":
         color_code = color_map(color)

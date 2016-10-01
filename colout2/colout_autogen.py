@@ -1,5 +1,5 @@
-from colout import colout_configure
-from colout.colout import ThemeEntry
+from colout2 import colout_configure
+from colout2.colout import ThemeEntry
 
 
 def theme(context):
